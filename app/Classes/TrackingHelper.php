@@ -51,14 +51,18 @@ class TrackingHelper
                 $finalTracking[] = $tracking;
             }
 
-            $lastRecord = $finalTracking[count($finalTracking) - 1];
+            if (count($finalTracking) > 0) {
+                $lastRecord = $finalTracking[count($finalTracking) - 1];
 
-            $distance = $this->GetDistance($lastRecord->latitude, $lastRecord->longitude, $tracking->latitude, $tracking->longitude);
+                $distance = $this->GetDistance($lastRecord->latitude, $lastRecord->longitude, $tracking->latitude, $tracking->longitude);
 
-            if ($distance < 0.5) {
-                $stillRemovedCount++;
-            } else if ($distance < 15 && $tracking->activity == 'ActivityType.IN_VEHICLE') {
-                $inVehicleRemoveCount++;
+                if ($distance < 0.5) {
+                    $stillRemovedCount++;
+                } else if ($distance < 15 && $tracking->activity == 'ActivityType.IN_VEHICLE') {
+                    $inVehicleRemoveCount++;
+                } else {
+                    $finalTracking[] = $tracking;
+                }
             } else {
                 $finalTracking[] = $tracking;
             }

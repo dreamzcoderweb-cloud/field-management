@@ -411,7 +411,7 @@ class DashboardController extends Controller
                             'signalStrength' => $tracking->signal_strength,
                             'trackingType' => $tracking->type,
                             'startTime' => $tracking->created_at->format('h:i A'),
-                            'endTime' => $nextTracking->created_at->format('h:i A'),
+                            'endTime' => $nextTracking != null ? $nextTracking->created_at->format('h:i A') : $tracking->created_at->format('h:i A'),
                             'elapseTime' => $elapseTime,
                         ];
                         break;
@@ -439,7 +439,7 @@ class DashboardController extends Controller
                             'signalStrength' => $tracking->signal_strength,
                             'trackingType' => $tracking->type,
                             'startTime' => $tracking->created_at->format('h:i A'),
-                            'endTime' => $nextTracking->created_at->format('h:i A'),
+                            'endTime' => $nextTracking != null ? $nextTracking->created_at->format('h:i A') : $tracking->created_at->format('h:i A'),
                             'elapseTime' => $elapseTime,
                             'distance' => $distance,
                         ];
