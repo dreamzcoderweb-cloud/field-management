@@ -1,0 +1,20 @@
+{
+    "NoticeBoard": false,
+    "ProductOrder": false,
+    "TaskSystem": false,
+    "DynamicForms": false,
+    "DocumentManagement": false,
+    "LoanManagement": false,
+    "PaymentCollection": false,
+    "GeofenceSystem": false,
+    "IpAddressAttendance": false,
+    "UidLogin": false,
+    "OfflineTracking": false,
+    "DataImportExport": false,
+    "SiteAttendance": false,
+    "QRAttendance": false,
+    "DynamicQRAttendance": false,
+    "BreakSystem": false,
+    "SalesTarget": false,
+    "ManagerApp": false
+}
