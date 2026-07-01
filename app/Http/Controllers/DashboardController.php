@@ -301,8 +301,7 @@ class DashboardController extends Controller
             $totalAttendanceTime = $totalTrackedTime;
 
             $trackings = Tracking::where('attendance_id', '=', $attendance->id)
-                ->where('accuracy', '>', 20)
-                ->distinct(['latitude', 'longitude', 'created_at'])
+                ->orderBy('created_at', 'asc')
                 ->get();
 
             $filteredTrackings = $trackingHelper->getFilteredData($trackings);

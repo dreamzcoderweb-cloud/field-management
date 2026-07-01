@@ -88,6 +88,7 @@
         var ltlng = [];
         var marker;
         var markers = [];
+        var polyline;
 
         function initMap() {
             var latitide = '{{$settings->center_latitude}}';
@@ -139,7 +140,7 @@
                     directionsService = new google.maps.DirectionsService();
                     directionsDisplay = new google.maps.DirectionsRenderer();
                     //Set the Path Stroke Color.
-                    var polyline = new google.maps.Polyline({
+                    polyline = new google.maps.Polyline({
                         path: [],
                         strokeColor: '#0000FF',
                         strokeWeight: 3
@@ -293,49 +294,21 @@
 
 
                         //Poly Line
-                        var firstItem = timeLineItems[0];
-
-                        if(timeLineItems.length === 1){
-                            map.setCenter(new google.maps.LatLng(firstItem.latitude, firstItem.longitude));
-                        }else{
-                            var lastItem = timeLineItems.pop();
-                            //Set Center
-                            var middle = timeLineItems[Math.round((timeLineItems.length - 1) / 2)];
-                            map.setCenter(new google.maps.LatLng(middle.latitude, middle.longitude));
+                        if(ltlng.length === 1){
+                            map.setCenter(ltlng[0]);
+                            map.setZoom(15);
+                        }else if(ltlng.length > 1){
+                            //Set Center and Bounds
+                            var bounds = new google.maps.LatLngBounds();
+                            for (var j = 0; j < ltlng.length; j++) {
+                                bounds.extend(ltlng[j]);
+                            }
+                            map.fitBounds(bounds);
 
                             //Polyline draw
-                            directionsService.route({
-                                origin: new google.maps.LatLng(firstItem.latitude, firstItem.longitude),
-                                destination: new google.maps.LatLng(lastItem.latitude, lastItem.longitude),
-                                waypoints: myTrip,
-                                optimizeWaypoints: true,
-                                travelMode: google.maps.TravelMode.DRIVING
-
-                            }, function (response, status) {
-                                if (status === google.maps.DirectionsStatus.OK) {
-                                    // console.log('Routes'+JSON.stringify(response, null, 2));
-                                    var bounds = new google.maps.LatLngBounds();
-                                    var legs = response.routes[0].legs;
-
-                                    for (i = 0; i < legs.length; i++) {
-                                        var steps = legs[i].steps;
-                                        for (j = 0; j < steps.length; j++) {
-                                            var nextSegment = steps[j].path;
-                                            for (k = 0; k < nextSegment.length; k++) {
-                                                polyline.getPath().push(nextSegment[k]);
-                                                bounds.extend(nextSegment[k]);
-                                            }
-                                        }
-                                    }
-
-                                    polyline.setMap(map);
-                                } else {
-                                    console.log('Directions request failed due to ' + status);
-                                }
-                            });
+                            polyline.setPath(ltlng);
+                            polyline.setMap(map);
                         }
-
-                        map.setZoom(11);
 
                         //// initialize services
                         //const geocoder = new google.maps.Geocoder();
@@ -374,7 +347,6 @@
                     } else {
                         contents = '<p> No data! </p>';
                     }
-                    polyline.setMap(null);
                     var finalContent = `<div class="card"><div class="card-body">` +
                         `${mainHeader}<div class="timeline mt-1" style="overflow-y:scroll; max-height:350px">${contents}</div></div></div>`;
 
@@ -404,6 +376,9 @@
                 markers[i].setMap(null);
             }
             markers.length = 0;
+            if (polyline) {
+                polyline.setMap(null);
+            }
         }
 
         /* Battery */

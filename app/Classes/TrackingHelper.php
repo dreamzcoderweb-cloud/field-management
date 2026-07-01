@@ -37,18 +37,13 @@ class TrackingHelper
 
         $finalTracking = [];
 
-        $stillRemovedCount = 0;
-        $inVehicleRemoveCount = 0;
-
         for ($i = 0; $i < $trackings->count(); $i++) {
 
             $tracking = $trackings[$i];
 
-            //$previousTracking = $trackings[$i-1];
-
             if ($tracking->type == 'checked_in' || $tracking->type == 'checked_out') {
-
                 $finalTracking[] = $tracking;
+                continue;
             }
 
             if (count($finalTracking) > 0) {
@@ -56,21 +51,15 @@ class TrackingHelper
 
                 $distance = $this->GetDistance($lastRecord->latitude, $lastRecord->longitude, $tracking->latitude, $tracking->longitude);
 
-                if ($distance < 0.5) {
-                    $stillRemovedCount++;
-                } else if ($distance < 15 && $tracking->activity == 'ActivityType.IN_VEHICLE') {
-                    $inVehicleRemoveCount++;
-                } else {
-                    $finalTracking[] = $tracking;
+                if ($distance < 0.002) {
+                    continue;
                 }
-            } else {
-                $finalTracking[] = $tracking;
             }
 
+            $finalTracking[] = $tracking;
         }
 
-        //Take 24 items from final tracking array
-        return array_slice($finalTracking, 0, 24);
+        return $finalTracking;
     }
 
     function GetDistance($lat1, $lon1, $lat2, $lon2): float
