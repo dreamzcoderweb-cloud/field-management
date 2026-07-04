@@ -344,7 +344,7 @@ class DashboardController extends Controller
                 if ($tracking->type == 'checked_out') {
 
 
-                    $elapseTime = $tracking->created_at->format('%H:%I:%S');
+                    $elapseTime = '00:00:00';
 
                     $timeLineItems[] = [
                         'id' => $tracking->id,
@@ -359,7 +359,7 @@ class DashboardController extends Controller
                         'address' => $tracking->address,
                         'signalStrength' => $tracking->signal_strength,
                         'trackingType' => $tracking->type,
-                        'startTime' => $elapseTime,
+                        'startTime' => $tracking->created_at->format('h:i A'),
                         'endTime' => $tracking->created_at->format('h:i A'),
                         'elapseTime' => $elapseTime,
                     ];
@@ -372,7 +372,7 @@ class DashboardController extends Controller
                     $nextTracking = $filteredTrackings[$i + 1];
                     $elapseTime = $tracking->created_at->diff($nextTracking->created_at)->format('%H:%I:%S');
                 } else {
-                    $elapseTime = $tracking->created_at->format('%H:%I:%S');
+                    $elapseTime = '00:00:00';
                 }
 
                 switch ($tracking->activity) {
@@ -419,7 +419,7 @@ class DashboardController extends Controller
                         $distance = 0;
                         if ($i + 1 < count($filteredTrackings)) {
                             $nextTracking = $filteredTrackings[$i + 1];
-                            $distance = $trackingHelper->GetDistance($tracking->latitude, $tracking->longitude, $nextTracking->latitude, $nextTracking->longitude);
+                            $distance = round($trackingHelper->GetDistance($tracking->latitude, $tracking->longitude, $nextTracking->latitude, $nextTracking->longitude), 2);
                             $totalKM += $distance;
                         }
 
@@ -448,6 +448,8 @@ class DashboardController extends Controller
 
             $totalKM = round($totalKM, 2);
 
+            $snappedPath = $trackingHelper->getSnappedPath($filteredTrackings);
+
             $response = [
                 'employeeId' => $attendance->user->id,
                 'employeeName' => $attendance->user->getFullName(),
@@ -457,6 +459,7 @@ class DashboardController extends Controller
                 'deviceInfo' => $device->brand . ' ' . $device->model,
                 'totalKM' => $totalKM,
                 'timeLineItems' => $timeLineItems,
+                'snappedPath' => $snappedPath,
             ];
 
             return response()->json($response);

@@ -252,43 +252,37 @@
                                 })
                             }
 
-                            var activity = item.type;
-                            var vehCount = 0;
-                            if (activity === 'vehicle') {
-                                contents += `<div class="time-label">
-                                                                                <span class="bg-green">Travel ${item.startTime} - ${item.endTime} (${item.elapseTime}H)  ${item.distance} KM</span>
-                                                                      </div>`;
-                                vehCount + 1;
-                            } else {
-                                var battery = getBattery(item.batteryPercentage);
-                                contents += `
-                                             <div class="card ml-2 mr-2 mt-2">
-                                                <div class="card-body">
-                                                         <div class="timeline-item">
-                                                             <div class="row justify-content-around mb-1">
-                                                                        <div class="col">
-                                                                         <span><i class="fas fa-clock"></i> ${item.startTime} - ${item.endTime} </span>
-                                                                      </div>
-                                                                      <div class="col align-self-end">
-                                                                         ${battery}
-                                                              </div>
-                                                             </div>
-                                                             <div class="row">
-                                                             <div class="col">
-                                                                 <h5 class="text-primary"> <span class="badge bg-primary">${i + 1}</span> ${item.type}</h5>
-                                                             </div>
-                                                             <div class="col">
-                                                                   Accuracy ${item.accuracy}%
-                                                             </div>
-                                                             </div>
-                                                             <div class="timeline-body" id='address${item.id}'>
-                                                                 ${address}
-                                                             </div>
+                            var activityTitle = getActivity(item.trackingType, item.activity);
+                            var battery = getBattery(item.batteryPercentage);
+                            var distanceText = (item.distance && item.distance > 0) ? `</br>Distance: ${item.distance} KM` : '';
+                            
+                            contents += `
+                                         <div class="card ml-2 mr-2 mt-2">
+                                            <div class="card-body">
+                                                     <div class="timeline-item">
+                                                         <div class="row justify-content-around mb-1">
+                                                                    <div class="col">
+                                                                     <span><i class="fas fa-clock"></i> ${item.startTime} - ${item.endTime} </span>
+                                                                  </div>
+                                                                  <div class="col align-self-end">
+                                                                     ${battery}
+                                                          </div>
                                                          </div>
-                                                </div>
-                                                 </div>`;
-                                vehCount = 0;
-                            }
+                                                         <div class="row">
+                                                         <div class="col">
+                                                             <h5 class="text-primary"> <span class="badge bg-primary">${i + 1}</span> ${activityTitle}</h5>
+                                                         </div>
+                                                         <div class="col">
+                                                               Accuracy ${item.accuracy}%
+                                                         </div>
+                                                         </div>
+                                                         <div class="timeline-body" id='address${item.id}'>
+                                                             ${address}
+                                                             ${distanceText}
+                                                         </div>
+                                                     </div>
+                                            </div>
+                                             </div>`;
 
                         }
 
@@ -306,7 +300,12 @@
                             map.fitBounds(bounds);
 
                             //Polyline draw
-                            polyline.setPath(ltlng);
+                            if (data.snappedPath && data.snappedPath.length > 0) {
+                                var snappedPathPoints = data.snappedPath.map(p => new google.maps.LatLng(p.lat, p.lng));
+                                polyline.setPath(snappedPathPoints);
+                            } else {
+                                polyline.setPath(ltlng);
+                            }
                             polyline.setMap(map);
                         }
 
@@ -408,26 +407,26 @@
         function getActivity(trackType, trackActivity) {
             var activity = 'Still';
 
-            if (trackType === 0) {
+            if (trackType === 0 || trackType === 'checked_in' || trackType === 'checkIn') {
                 activity = 'Check In';
 
-            } else if (trackType === 3) {
+            } else if (trackType === 3 || trackType === 'checked_out' || trackType === 'checkOut') {
                 activity = 'Check Out';
 
-            } else if (trackType === 4) {
+            } else if (trackType === 4 || trackType === 'auto_checked_out') {
                 activity = 'Auto Check Out';
 
             } else {
                 if (trackActivity === "ActivityType.STILL") {
                     activity = 'Still';
                 } else if (trackActivity === "ActivityType.WALKING") {
-                    activity = 'Walking'
+                    activity = 'Walking';
                 } else if (trackActivity === "ActivityType.UNKNOWN") {
-                    activity = 'Unknown'
+                    activity = 'Travelling';
                 } else if (trackActivity === "ActivityType.IN_VEHICLE") {
                     activity = 'In Vehicle';
                 } else {
-                    activity = trackActivity;
+                    activity = trackActivity ? trackActivity : 'Travelling';
                 }
             }
 
