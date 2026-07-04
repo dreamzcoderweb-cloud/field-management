@@ -215,7 +215,8 @@
     <script src="{{ asset('vendors/is/is.min.js') }}"></script>
     <script src="{{ asset('vendors/fontawesome/all.min.js') }}"></script>
     <script src="{{ asset('vendors/lodash/lodash.min.js') }}"></script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=window.scroll"></script>
+    <!-- polyfill disabled for debugging popup issue: https://polyfill.io -->
+    <!-- <script src="https://polyfill.io/v3/polyfill.min.js?features=window.scroll"></script> -->
     <script src="{{ asset('vendors/list.js/list.min.js') }}"></script>
     <script src="{{ asset('vendors/feather-icons/feather.min.js') }}"></script>
     <script src="{{ asset('vendors/dayjs/dayjs.min.js') }}"></script>
