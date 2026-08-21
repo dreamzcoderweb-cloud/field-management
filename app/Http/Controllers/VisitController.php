@@ -17,9 +17,9 @@ class VisitController extends Controller
 
         if($date != null && $employeeId != null){
             $visits = Visit::whereDate('created_at', $date)
-                ->where('created_by_id', $employeeId)->get();
+                ->where('created_by_id', $employeeId)->orderByDesc('created_at')->get();
         }else{
-            $visits = Visit::all();
+            $visits = Visit::orderByDesc('created_at')->get();
         }
 
         $employees = $viewHelper->getEmployeeSelectLists();

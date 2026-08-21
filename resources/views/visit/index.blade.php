@@ -56,7 +56,9 @@
                     @foreach($visits as $visit)
                         <tr>
                             <td>{{$loop->iteration}}</td>
-                            <td>{{$visit->remarks}}</td>
+                           <td>
+                                        {{ $visit->employee ? $visit->employee->first_name . ' ' . $visit->employee->last_name : '-' }}
+                            </td>
                             <td>{{$visit->client->name}}</td>
                             <td>{{$visit->remarks}}</td>
                             <td>

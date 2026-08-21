@@ -33,4 +33,9 @@ class Visit extends Model
     {
         return $this->belongsTo(Attendance::class, 'attendance_id');
     }
+
+    public function employee()
+    {
+        return $this->belongsTo(User::class, 'created_by_id', 'id');
+    }
 }
