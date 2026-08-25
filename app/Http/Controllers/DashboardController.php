@@ -257,6 +257,18 @@ class DashboardController extends Controller
         $employeeId = $request->userId;
         $date = $request->date;
 
+        $employee = User::find($employeeId);
+        if ($employee === null) {
+            return response()->json([
+                'employeeName' => 'Employee not found',
+                'employeeId' => $employeeId,
+                'totalTrackedTime' => '00:00:00',
+                'totalAttendanceTime' => '00:00:00',
+                'deviceInfo' => '-',
+                'timeLineItems' => [],
+            ]);
+        }
+
         $trackingHelper = new TrackingHelper();
 
         $attendance = Attendance::where('user_id', '=', $employeeId)
@@ -271,11 +283,11 @@ class DashboardController extends Controller
 
         if ($attendance == null) {
             return response()->json([
-                'employeeName' => $device->user->getFullName(),
-                'employeeId' => $device->user->id,
+                'employeeName' => $employee->getFullName(),
+                'employeeId' => $employee->id,
                 'totalTrackedTime' => '00:00:00',
                 'totalAttendanceTime' => '00:00:00',
-                'deviceInfo' => $device->brand . ' ' . $device->model,
+                'deviceInfo' => $device ? $device->brand . ' ' . $device->model : '-',
                 'timeLineItems' => [],
             ]);
         }
@@ -451,12 +463,12 @@ class DashboardController extends Controller
             $snappedPath = $trackingHelper->getSnappedPath($filteredTrackings);
 
             $response = [
-                'employeeId' => $attendance->user->id,
-                'employeeName' => $attendance->user->getFullName(),
+                'employeeId' => $employee->id,
+                'employeeName' => $employee->getFullName(),
                 'attendanceId' => $attendance->id,
                 'totalTrackedTime' => $totalTrackedTime,
                 'totalAttendanceTime' => $totalAttendanceTime,
-                'deviceInfo' => $device->brand . ' ' . $device->model,
+                'deviceInfo' => $device ? $device->brand . ' ' . $device->model : '-',
                 'totalKM' => $totalKM,
                 'timeLineItems' => $timeLineItems,
                 'snappedPath' => $snappedPath,
